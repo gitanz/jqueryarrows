@@ -30,7 +30,8 @@
 				   left:target.centerWidth+"px",
 				   width:options.width,
 				   background:options.color,
-				   "z-index":"9999"
+				   "z-index":"9999",
+                    "box-shadow": "0px 1px 1px #000"
 				})
 				$("body").append(line);
 			},
@@ -48,8 +49,10 @@
 				   left:target.centerWidth+"px",
 				   width:options.width,
 				   background:options.color,
-				   "z-index":"9999"
-				})
+				   "z-index":"9999",
+                   "box-shadow": "0px 1px 1px #000"
+
+            })
 				$("body").append(line);
 			},
 			left2right:function(src, target,options){
@@ -66,7 +69,8 @@
 				   width:(target.Xl - src.Xr)+"px",
 				  "height":options.width,
 				   background:options.color,
-				   "z-index":"9999"
+				   "z-index":"9999",
+                    "box-shadow": "0px 1px 1px #000"
 				})
 				$("body").append(line);
 			},
@@ -84,7 +88,8 @@
 				   width:(src.Xl - target.Xr)+"px",
 				  "height":options.width,
 				   background:options.color,
-				   "z-index":"9999"
+				   "z-index":"9999",
+                    "box-shadow": "0px 1px 1px #000"
 				})
 				$("body").append(line);
 			},
@@ -121,10 +126,11 @@
 					"height" : (Yt-src.Yb)/2+"px",
 					"width" : options.width,
 					"background" : options.color,
-					"z-index":"9999"	
+					"z-index":"9999",
+                    "box-shadow": "0px 1px 1px #000"
 				};
 				line = $("<div/>");
-				line.attr("class","line-top2bottom");
+				line.attr("class","line");
 				line.css(css);
 
 				$("body").append(line);
@@ -135,10 +141,12 @@
 					"height" : options.width,
 					"width" : (lgCenterWidth-smCenterWidth)+"px",
 					"background" : options.color,
-					"z-index":"9999"	
+					"z-index":"9999",
+                    "box-shadow": "0px 1px 1px #000"
 				};
 				horizontalLine = $("<div/>");
-				horizontalLine.css(css);
+                horizontalLine.attr("class","line");
+                horizontalLine.css(css);
 				$("body").append(horizontalLine);
 				$.each(targets,function(key,element){
 					//draw bottom top line that meets horizontal line
@@ -149,11 +157,14 @@
 					"width" : options.width,
 					"height" : (element.Yt-src.Yb)/2+"px",
 					"background" : options.color,
-					"z-index":"9999"	
+					"z-index":"9999",
+                    "box-shadow": "0px 1px 1px #000"
+
 					};	
 					verticalLine = $("<div/>");
 					verticalLine.attr("class","line-top2bottom");
 					verticalLine.css(css);
+                    arrowHeight = ((element.Yt-src.Yb)/2 - 6)+"px";
 					$("body").append(verticalLine);
 				});
 
@@ -227,8 +238,12 @@
 		}
 		var self = {
 			_initialize:function(element){
+
 				element.find("[class*='connect']").each(function(){
-					options = self._buildOptions(this);
+					if($(this).closest(":hidden").length>0){
+                        return false;
+                    }
+                    options = self._buildOptions(this);
 					var extendedRules = self._extendDefaults(options);	
 					options = extendedRules;	
 					if(options.connectionStyle=="top2MultipleBottom"){
@@ -246,8 +261,13 @@
 						}
 					}else{
 						sourceElement = new ElementModel($(this));
-						targetElement = new ElementModel($("#"+options.connect2div));		
-						eval("draw."+options.connectionStyle)(sourceElement, targetElement, options);					
+						targetElement = new ElementModel($("#"+options.connect2div));
+                        if(targetElement.element.is(":hidden")){
+                            return false;
+                        }else{
+                            eval("draw."+options.connectionStyle)(sourceElement, targetElement, options);
+                        }
+
 					}
 				});
 			},
@@ -291,6 +311,11 @@
 				self._initialize($elem);
 				return this;
 			},
+            drawArrow:function(target,options){
+                src = new ElementModel($(this));
+                target = new ElementModel($(target));
+                eval("draw."+options.connectionStyle)(src, target, options);
+            },
 			defaults:{
 				"connectionStyle":"top2bottom",
 				"connect2div":"",
